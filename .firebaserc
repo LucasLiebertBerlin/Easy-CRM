@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "liebert-crm-7a07a": {
+      "hosting": {
+        "crm": [
+          "liebert-crm-7a07a"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "liebert-crm-7a07a"
+  }
+}

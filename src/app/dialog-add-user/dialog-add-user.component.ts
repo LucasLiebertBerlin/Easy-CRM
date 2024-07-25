@@ -1,35 +1,51 @@
-import { Component, inject } from '@angular/core';
-import { MatDialogModule } from '@angular/material/dialog';
+import { Component, Inject } from '@angular/core';
+import {
+  MatDialog,
+  MAT_DIALOG_DATA,
+  MatDialogRef,
+  MatDialogTitle,
+  MatDialogContent,
+  MatDialogActions,
+  MatDialogClose,
+} from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
+import { FormsModule } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatIconModule } from '@angular/material/icon';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { provideNativeDateAdapter } from '@angular/material/core';
-import { FormsModule } from '@angular/forms';
-import { User } from '../../models/user.class'; // Stelle sicher, dass der Pfad zu User korrekt ist
+import { User } from '../../models/user.class';
+import { inject } from '@angular/core';
 import { Firestore, collection, collectionData, addDoc, doc, getDoc, updateDoc } from '@angular/fire/firestore';
 import { Observable } from 'rxjs';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-dialog-add-user',
   standalone: true,
   providers: [provideNativeDateAdapter()],
-  imports: [MatDialogModule, MatButtonModule, MatInputModule, MatIconModule, MatFormFieldModule, MatDatepickerModule, FormsModule],
+  imports: [ MatFormFieldModule,
+    MatInputModule,
+    FormsModule,
+    MatButtonModule,
+    MatDialogTitle,
+    MatDialogContent,
+    MatDialogActions,
+    MatDialogClose,
+    MatDatepickerModule,
+    MatProgressBarModule,
+    CommonModule
+  ],
   templateUrl: './dialog-add-user.component.html',
-  styleUrls: ['./dialog-add-user.component.scss']
+  styleUrl: './dialog-add-user.component.scss'
 })
 export class DialogAddUserComponent {
   user = new User();
-  birthDate: Date = new Date();
+  birthDate!: Date;
   loading = false;
-  items$: Observable<any[]>;
 
-  constructor(private firestore: Firestore) {
-    const itemsCollection = collection(firestore, 'items');
-    this.items$ = collectionData(itemsCollection);
-  }
-
+  constructor(public dialogRef: MatDialogRef<DialogAddUserComponent>, public dialog: MatDialog, private readonly firestore: Firestore) {}
 
   saveUser(){
     this.user.birthDate = this.birthDate.getTime();
@@ -38,14 +54,12 @@ export class DialogAddUserComponent {
 
     addDoc(collection(this.firestore, 'users'), this.user.toJSON())
     .then((result: any) => {
+      console.log('klappt', result);
       this.loading = false;
       this.user['userId'] = result.id
       updateDoc(doc(this.firestore, 'users', this.user['userId']), this.user.toJSON());
       console.log(result);
-      // this.dialogRef.close();
+      this.dialogRef.close();
     })
   }
 }
-
-
-
