@@ -54,10 +54,9 @@ export class DialogAddUserComponent {
 
     addDoc(collection(this.firestore, 'users'), this.user.toJSON())
     .then((result: any) => {
-      console.log('klappt', result);
       this.loading = false;
-      this.user['userId'] = result.id
-      updateDoc(doc(this.firestore, 'users', this.user['userId']), this.user.toJSON());
+      this.user['id'] = result.id
+      updateDoc(doc(this.firestore, 'users', this.user['id']), this.user.toJSON());
       console.log(result);
       this.dialogRef.close();
     })
