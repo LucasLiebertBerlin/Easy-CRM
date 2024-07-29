@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { collection, collectionData, doc, Firestore, onSnapshot } from '@angular/fire/firestore';
 import { MatCardModule } from '@angular/material/card';
 import { ActivatedRoute } from '@angular/router';
@@ -9,6 +9,7 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogEditAddressComponent } from '../dialog-edit-address/dialog-edit-address.component';
 import { DialogEditUserComponent } from '../dialog-edit-user/dialog-edit-user.component';
+import { MatFormFieldControl } from '@angular/material/form-field';
 
 @Component({
   selector: 'app-user-detail',
@@ -17,10 +18,10 @@ import { DialogEditUserComponent } from '../dialog-edit-user/dialog-edit-user.co
   templateUrl: './user-detail.component.html',
   styleUrl: './user-detail.component.scss'
 })
-export class UserDetailComponent {
+export class UserDetailComponent implements OnInit{
 
-  userId: string = "";
-  user: User = new User;
+  userId: any;
+  user: User = new User();
 
 
   constructor(
@@ -29,32 +30,45 @@ export class UserDetailComponent {
     public dialog: MatDialog
   ) { }
 
-  ngOnInit(): void {
+  // ngOnInit(): void {
 
+  //   this.route.paramMap.subscribe(paramMap => {
+  //     this.userId = paramMap.get('id') ?? "";
+  //     console.log('GOT ID', this.userId);
+  //     this.getUser();
+  //   })
+  // }
+
+  ngOnInit(): void {
     this.route.paramMap.subscribe(paramMap => {
-      this.userId = paramMap.get('id') ?? "";
+      this.userId = paramMap.get('id');
       console.log('GOT ID', this.userId);
       this.getUser();
     })
   }
 
-
   getUser() {
     onSnapshot(doc(collection(this.firestore, 'users'), this.userId), (user: any) => {
       this.user = new User(user.data());
-      console.log('Retrieved User', this.user)
+      console.log('Retrieved User', this.userId)
     })
   }
 
-  
+
   editMenu() {
     const dialog = this.dialog.open(DialogEditAddressComponent);
-    dialog.componentInstance.user = this.user;
+    dialog.componentInstance.user = new User(this.user);
+    dialog.componentInstance.userId = this.userId;
   }
 
 
   editUserDetail() {
-    this.dialog.open(DialogEditUserComponent);
+    const dialog = this.dialog.open(DialogEditUserComponent);
+    dialog.componentInstance.user = new User(this.user);
+    dialog.componentInstance.userId = this.userId;
   }
 
+  toDate(timestamp: number): Date {
+    return new Date(timestamp);
+  }
 }

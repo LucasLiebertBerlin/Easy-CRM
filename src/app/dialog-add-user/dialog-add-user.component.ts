@@ -28,6 +28,7 @@ import { CommonModule } from '@angular/common';
   imports: [ MatFormFieldModule,
     MatInputModule,
     FormsModule,
+    MatFormFieldModule,
     MatButtonModule,
     MatDialogTitle,
     MatDialogContent,
